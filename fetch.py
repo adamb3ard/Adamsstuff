@@ -134,8 +134,8 @@ def tenPermDecode(listing):
 FTP SERVER CODE
 '''
 
-#ftp=FTP('jeangourd.com') #hostname
-ftp=FTP('localhost') #test host
+ftp=FTP('jeangourd.com') #hostname
+#ftp=FTP('localhost') #test host
 ftp.login('anonymous','') #log in as anonymous; password is ''
 
 #stores everything sent to stdout
