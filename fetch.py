@@ -3,22 +3,64 @@
 from ftplib import FTP
 from StringIO import StringIO
 import sys
+import binascii
+
+'''
+Recycled binary code
+'''
+def specChar(n,arr): #if ascii value is not basic text
+	if n == 8: #BACKSPACE
+		arr = arr[:-1]
+	return arr
+
+#Takes binary, and converts to 8 bit ascii
+def cypherEight(ciphText):
+	start = 0
+	end = start + 8
+	plain = []
+	while start <= len(ciphText)-8:
+		n = int(ciphText[start:end],2)
+		try:
+			plain.append(binascii.unhexlify('%x' % n))
+		except:
+			plain = specChar(n,plain)
+		start=end
+		end=start+8
+	plainStr = ''.join(plain)
+	print(plainStr)
+
+#Takes binary and converts to 7 bit ascii
+def cypherSeven(ciphText):
+	start = 0
+	end = start + 7
+	plain = []
+	while start <= len(ciphText)-7:
+		n = int(ciphText[start:end],2)
+		try:
+			plain.append(binascii.unhexlify('%x' % n))
+		except:
+			plain = specChar(n,plain)
+		start=end
+		end=start+7
+	print(''.join(plain))
+
 
 '''
 This function takes stdout from ls from a ftp server,
 then isolates the 7 right most permissions to turn into binary
 that can be turned into 7bit ascii
 '''
-def sevenbitDecode(listing):
+def sevenPermDecode(listing):
     charInd = 0 #used to move left to right in each line
     permOut = [] #holds the permissions to be turned into binary
+    binOut = [] #holds binary output
     tag1=False
     tag2=False
     tag3=False
 
     # goes through stdout isolating the permissions
     #if a file has the first 3 bits clear, it will record that
-    for char in termOut:
+    for char in listing:
 
         if charInd == 0 and char == '-': tag1 = True
         if charInd == 1 and char == '-': tag2 = True
@@ -46,16 +88,54 @@ def sevenbitDecode(listing):
             binOut.append('0')
         else:
             binOut.append('1')
-            
-    #prints binary can be put into file to be decoded from binary
-    print ''.join(binOut) #print binOut as a string (the final binary number)
 
+    #prints binary can be put into file to be decoded from binary
+    #print ''.join(binOut) #print binOut as a string (the final binary number)
+
+    cypherSeven(''.join(binOut)) #print 7bit ascii
+
+'''
+This function takes stdout from ls from a ftp server,
+then isolates the permissions to turn into binary
+that can be turned into 7bit ascii
+'''
+def tenPermDecode(listing):
+    charInd = 0
+    permOut = []
+    binOut = []
+
+    # goes through stdout isolating the permissions
+    for char in listing:
+        if charInd < 10:
+            permOut.append(char)
+        if char == '\n':
+            charInd = 0
+        else:
+            charInd += 1
+
+    #print ''.join(permOut) #print permOut as a string (all 10 perm)
+
+    #goes through saved permissions and turns into binary
+    for perm in permOut:
+        if perm == '-':
+            binOut.append('0')
+        else:
+            binOut.append('1')
+
+    #remove extra bits
+    while len(binOut) % 7 != 0:
+        binOut.pop()
+
+    #print ''.join(binOut) #print binOut as a string (final binary number)
+
+    cypherSeven(''.join(binOut)) #print 7bit ascii
 
 '''
 FTP SERVER CODE
 '''
 
 ftp=FTP('jeangourd.com') #hostname
+#ftp=FTP('localhost') #test host
 ftp.login('anonymous','') #log in as anonymous; password is ''
 
 #stores everything sent to stdout
@@ -64,7 +144,7 @@ result=StringIO()
 sys.stdout=result
 
 
-ftp.cwd('7') #CHANGE DIR HERE
+ftp.cwd('10') #CHANGE DIR HERE
 
 #put comands that cause stdout here
 ftp.retrlines('LIST')
@@ -78,12 +158,14 @@ MAIN
 '''
 termOut=result.getvalue()
 
-#print termOut
+#print termOut #print stdout
 
-sevenbitDecode(termOut)
+#sevenPermDecode(termOut)
+tenPermDecode(termOut)
 
 '''
 Work Cited
 https://docs.python.org/2/library/ftplib.html
 https://wrongsideofmemphis.wordpress.com/2010/03/01/store-standard-output-on-a-variable-in-python/
 '''
+
