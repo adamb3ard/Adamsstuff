@@ -134,9 +134,21 @@ def tenPermDecode(listing):
 FTP SERVER CODE
 '''
 
-ftp=FTP('jeangourd.com') #hostname
+#ftp=FTP('jeangourd.com') #hostname
 #ftp=FTP('localhost') #test host
+#ftp.login('anonymous','') #log in as anonymous; password is ''
+
+'''
+Specify port for FTP
+'''
+HOST = "jeangourd.com"
+PORT = 21
+ftp = FTP()
+ftp.connect(HOST, PORT)
 ftp.login('anonymous','') #log in as anonymous; password is ''
+
+
+
 
 #stores everything sent to stdout
 old_stdout=sys.stdout
@@ -144,7 +156,7 @@ result=StringIO()
 sys.stdout=result
 
 
-ftp.cwd('10') #CHANGE DIR HERE
+ftp.cwd('new') #CHANGE DIR HERE
 
 #put comands that cause stdout here
 ftp.retrlines('LIST')
@@ -160,12 +172,14 @@ termOut=result.getvalue()
 
 #print termOut #print stdout
 
-#sevenPermDecode(termOut)
-tenPermDecode(termOut)
+print("seven running...")
+try:
+    sevenPermDecode(termOut)
+except:
+    print("Seven failed")
 
-'''
-Work Cited
-https://docs.python.org/2/library/ftplib.html
-https://wrongsideofmemphis.wordpress.com/2010/03/01/store-standard-output-on-a-variable-in-python/
-'''
-
+print("ten running...")
+try:
+    tenPermDecode(termOut)
+except:
+    print("ten failed")
