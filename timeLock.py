@@ -5,6 +5,25 @@ import datetime
 import hashlib
 
 #todo check for DLS and figure out what to do if times are in it or not
+def getCode(hex):
+	output = []
+	#get first two letters
+	for item in hex:
+		try:
+			int(hex[hex.index(item)])
+		except:
+			output.append([item])
+		if len(output) == 2:
+			break
+	#get last two numbers
+	for item in reversed(hex):
+		if item.isdigit() == True:
+			output.append(item)
+		if len(output) == 4:
+			break
+
+
+	print(output)
 
 '''
 uses modern daylight saving rules to determine is date is in dls
@@ -78,6 +97,10 @@ m2=hashlib.md5()
 m2.update(m.hexdigest())
 print("second hash", m2.hexdigest())
 
+getCode(m2.hexdigest())
+
+
+
 
 
 '''
@@ -88,3 +111,5 @@ time library:
 https://docs.python.org/2/library/time.html
 
 hashlib:
+https://docs.python.org/2/library/hashlib.html#module-hashlib
+'''
