@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 #python2
+
 import fileinput
 import datetime
 import hashlib
@@ -9,21 +10,19 @@ def getCode(hex):
 	code = []
 	#get first two letters
 	for item in hex:
-		try:
-			int(hex[hex.index(item)])
-		except:
+		if item.isdigit() == False: #test if item is number
 			code.append(item)
 		if len(code) == 2:
 			break
+
 	#get last two numbers
 	for item in reversed(hex):
-		if item.isdigit() == True:
+		if item.isdigit() == True: #test if item is a number
 			code.append(item)
 		if len(code) == 4:
 			break
 
 	print ''.join(code)
-
 
 '''
 uses modern daylight saving rules to determine is date is in dls
@@ -31,29 +30,11 @@ uses modern daylight saving rules to determine is date is in dls
 takes datetime and returns True if in DLS
 '''
 def checkDLS(date):
-	#easy checks
+	#check months
 	if date.month >= 3 and date.month <= 11:
-		#print("month is", date.month)
-		#print("day is", date.weekday())
 		return True
 	else:
 		return False
-
-#test cases
-#year, month, day , hour, min, sec
-#now=datetime.datetime(2013,5,6,7,43,25) #in dls must sub 1 hr
-#epoch=datetime.datetime(1999,12,31,23,59,59) #WORKS
-
-#now=datetime.datetime(2017,03,23,18,02,06) #in dls
-#epoch=datetime.datetime(2017,01,01,00,00,00) #WORKS!
-
-#now=datetime.datetime(2015,05,15,14,00,0)
-#epoch=datetime.datetime(2015,01,01,00,00,0) #WORKS
-
-#now=datetime.datetime(2017,4,26,15,14,30)
-#epoch=datetime.datetime(1974,6,1,8,57,23)
-
-
 
 now = datetime.datetime.now()
 #now = datetime.datetime(2010,06,13,12,55,34) test stdin time
@@ -80,29 +61,17 @@ if checkDLS(now) == False and checkDLS(epoch) == True:
 timeElapsed = now - epoch
 totalSec = int(timeElapsed.total_seconds())
 
-'''
-print("epoch is", str(epoch))
-print("current time", str(now))
-print("time elapsed", totalSec)#timeElapsed.total_seconds())
-'''
-#compute md5 of of relevent 60 sec interval
-#print("now seconds are",now.second)
 
 beginInt =  totalSec - (totalSec % 60)
 
-#print('begin interval is', beginInt)
-
+#create new md5 object for each encryption
 m=hashlib.md5()
 m.update(str(beginInt))
-#print("first hash", m.hexdigest())
-
 
 m2=hashlib.md5()
 m2.update(m.hexdigest())
-#print("second hash", m2.hexdigest())
 
 getCode(m2.hexdigest())
-
 
 '''
 datetime library:
