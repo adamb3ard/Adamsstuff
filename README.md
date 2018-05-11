@@ -1,2 +1,1 @@
-# thehumiliators
-Code for cyberstorm
+i made this for you
