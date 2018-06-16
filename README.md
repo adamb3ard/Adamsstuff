@@ -1,1 +1,1 @@
-i made this for you
+A collection of scripts for my cyber security class.
